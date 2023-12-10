@@ -108,10 +108,14 @@ export class JobService {
       case QueueName.THUMBNAIL_GENERATION:
         return this.jobRepository.queue({ name: JobName.QUEUE_GENERATE_THUMBNAILS, data: { force } });
 
-      case QueueName.RECOGNIZE_FACES:
+      case QueueName.FACE_DETECTION:
         await this.configCore.requireFeature(FeatureFlag.FACIAL_RECOGNITION);
-        return this.jobRepository.queue({ name: JobName.QUEUE_RECOGNIZE_FACES, data: { force } });
+        return this.jobRepository.queue({ name: JobName.QUEUE_FACE_DETECTION, data: { force } });
 
+      case QueueName.FACIAL_RECOGNITION:
+        await this.configCore.requireFeature(FeatureFlag.FACIAL_RECOGNITION);
+        return this.jobRepository.queue({ name: JobName.QUEUE_FACIAL_RECOGNITION, data: { force } });
+      
       case QueueName.LIBRARY:
         return this.jobRepository.queue({ name: JobName.LIBRARY_QUEUE_SCAN_ALL, data: { force } });
 
@@ -206,7 +210,7 @@ export class JobService {
         await this.jobRepository.queue({ name: JobName.GENERATE_WEBP_THUMBNAIL, data: item.data });
         await this.jobRepository.queue({ name: JobName.GENERATE_THUMBHASH_THUMBNAIL, data: item.data });
         await this.jobRepository.queue({ name: JobName.ENCODE_CLIP, data: item.data });
-        await this.jobRepository.queue({ name: JobName.RECOGNIZE_FACES, data: item.data });
+        await this.jobRepository.queue({ name: JobName.FACE_DETECTION, data: item.data });
 
         const [asset] = await this.assetRepository.getByIds([item.data.id]);
         if (asset) {
@@ -230,6 +234,11 @@ export class JobService {
         if (asset && asset.isVisible) {
           this.communicationRepository.send(ClientEvent.UPLOAD_SUCCESS, asset.ownerId, mapAsset(asset));
         }
+      }
+
+      case JobName.FACE_DETECTION: {
+        await this.jobRepository.queue({ name: JobName.QUEUE_FACIAL_RECOGNITION, data: item.data });
+        break;
       }
     }
   }

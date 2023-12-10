@@ -63,7 +63,13 @@ export class SystemConfigJobDto implements Record<QueueName, JobSettingsDto> {
   @ValidateNested()
   @IsObject()
   @Type(() => JobSettingsDto)
-  [QueueName.RECOGNIZE_FACES]!: JobSettingsDto;
+  [QueueName.FACE_DETECTION]!: JobSettingsDto;
+
+  @ApiProperty({ type: JobSettingsDto })
+  @ValidateNested()
+  @IsObject()
+  @Type(() => JobSettingsDto)
+  [QueueName.FACIAL_RECOGNITION]!: JobSettingsDto;
 
   @ApiProperty({ type: JobSettingsDto })
   @ValidateNested()
