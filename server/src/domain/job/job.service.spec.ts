@@ -290,7 +290,7 @@ describe(JobService.name, () => {
         jobs: [
           JobName.GENERATE_WEBP_THUMBNAIL,
           JobName.ENCODE_CLIP,
-          JobName.FACIAL_RECOGNITION,
+          JobName.FACE_DETECTION,
           JobName.GENERATE_THUMBHASH_THUMBNAIL,
         ],
       },
@@ -299,7 +299,7 @@ describe(JobService.name, () => {
         jobs: [
           JobName.GENERATE_WEBP_THUMBNAIL,
           JobName.ENCODE_CLIP,
-          JobName.FACIAL_RECOGNITION,
+          JobName.FACE_DETECTION,
           JobName.GENERATE_THUMBHASH_THUMBNAIL,
           JobName.VIDEO_CONVERSION,
         ],
@@ -308,7 +308,7 @@ describe(JobService.name, () => {
         item: { name: JobName.GENERATE_JPEG_THUMBNAIL, data: { id: 'asset-live-image', source: 'upload' } },
         jobs: [
           JobName.GENERATE_WEBP_THUMBNAIL,
-          JobName.FACIAL_RECOGNITION,
+          JobName.FACE_DETECTION,
           JobName.GENERATE_THUMBHASH_THUMBNAIL,
           JobName.ENCODE_CLIP,
           JobName.VIDEO_CONVERSION,

@@ -372,19 +372,19 @@ export interface AllJobStatusResponseDto {
      * @type {JobStatusDto}
      * @memberof AllJobStatusResponseDto
      */
-    'faceDetection': JobStatusDto;
-    /**
-     * 
-     * @type {JobStatusDto}
-     * @memberof AllJobStatusResponseDto
-     */
-    'facialRecognition': JobStatusDto;
-    /**
-     * 
-     * @type {JobStatusDto}
-     * @memberof AllJobStatusResponseDto
-     */
     'library': JobStatusDto;
+    /**
+     * 
+     * @type {JobStatusDto}
+     * @memberof AllJobStatusResponseDto
+     */
+    'metadataExtraction': JobStatusDto;
+    /**
+     * 
+     * @type {JobStatusDto}
+     * @memberof AllJobStatusResponseDto
+     */
+    'migration': JobStatusDto;
     /**
      * 
      * @type {JobStatusDto}
@@ -397,7 +397,6 @@ export interface AllJobStatusResponseDto {
      * @memberof AllJobStatusResponseDto
      */
     'search': JobStatusDto;
-    'migration': JobStatusDto;
     /**
      * 
      * @type {JobStatusDto}
