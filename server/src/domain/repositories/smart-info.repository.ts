@@ -12,7 +12,7 @@ export interface EmbeddingSearch {
 
 export interface FaceEmbeddingSearch extends EmbeddingSearch {
   maxDistance?: number;
-  hasPerson?: boolean;
+  noPerson?: boolean;
 }
 
 export interface ISmartInfoRepository {
