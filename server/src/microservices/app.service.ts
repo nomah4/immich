@@ -1,6 +1,7 @@
 import {
   AssetService,
   AuditService,
+  DatabaseService,
   IDeleteFilesJob,
   JobName,
   JobService,
@@ -31,11 +32,13 @@ export class AppService {
     private storageTemplateService: StorageTemplateService,
     private storageService: StorageService,
     private userService: UserService,
+    private databaseService: DatabaseService,
   ) {}
 
   async init() {
+    await this.databaseService.init();
     await this.configService.init();
-    await this.jobService.registerHandlers({
+    await this.jobService.init({
       [JobName.ASSET_DELETION]: (data) => this.assetService.handleAssetDeletion(data),
       [JobName.ASSET_DELETION_CHECK]: () => this.assetService.handleAssetDeletionCheck(),
       [JobName.DELETE_FILES]: (data: IDeleteFilesJob) => this.storageService.handleDeleteFiles(data),

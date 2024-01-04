@@ -9,6 +9,7 @@ import 'package:immich_mobile/modules/search/ui/thumbnail_with_info.dart';
 import 'package:immich_mobile/modules/shared_link/models/shared_link.dart';
 import 'package:immich_mobile/modules/shared_link/providers/shared_link.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_mobile/shared/providers/server_info.provider.dart';
 import 'package:immich_mobile/shared/ui/confirm_dialog.dart';
 import 'package:immich_mobile/shared/ui/immich_toast.dart';
 import 'package:immich_mobile/utils/image_url_builder.dart';
@@ -42,15 +43,17 @@ class SharedLinkItem extends ConsumerWidget {
         if (difference.inHours % 24 > 12) {
           dayDifference += 1;
         }
-        expiresText = "shared_link_expires_days".plural(dayDifference);
+        expiresText =
+            "shared_link_expires_days".tr(args: [dayDifference.toString()]);
       } else if (difference.inHours > 0) {
-        expiresText = "shared_link_expires_hours".plural(difference.inHours);
+        expiresText = "shared_link_expires_hours"
+            .tr(args: [difference.inHours.toString()]);
       } else if (difference.inMinutes > 0) {
-        expiresText =
-            "shared_link_expires_minutes".plural(difference.inMinutes);
+        expiresText = "shared_link_expires_minutes"
+            .tr(args: [difference.inMinutes.toString()]);
       } else if (difference.inSeconds > 0) {
-        expiresText =
-            "shared_link_expires_seconds".plural(difference.inSeconds);
+        expiresText = "shared_link_expires_seconds"
+            .tr(args: [difference.inSeconds.toString()]);
       }
     }
     return Text(
@@ -69,7 +72,11 @@ class SharedLinkItem extends ConsumerWidget {
     final imageSize = math.min(context.width / 4, 100.0);
 
     void copyShareLinkToClipboard() {
-      final serverUrl = getServerUrl();
+      final externalDomain = ref.read(
+        serverInfoProvider.select((s) => s.serverConfig.externalDomain),
+      );
+      final serverUrl =
+          externalDomain.isNotEmpty ? externalDomain : getServerUrl();
       if (serverUrl == null) {
         ImmichToast.show(
           context: context,
