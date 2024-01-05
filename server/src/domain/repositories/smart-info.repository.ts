@@ -16,16 +16,6 @@ export interface FaceEmbeddingSearch extends EmbeddingSearch {
   hasPerson?: boolean;
 }
 
-export interface FaceEmbeddingDensitySearch {
-  k: number;
-  maxDistance: number;
-}
-
-export interface FaceEmbeddingDensityResult {
-  faceId: string;
-  density: number;
-}
-
 export interface FaceSearchResult {
   face: AssetFaceEntity;
   distance: number;
@@ -35,6 +25,5 @@ export interface ISmartInfoRepository {
   init(modelName: string): Promise<void>;
   searchCLIP(search: EmbeddingSearch): Promise<AssetEntity[]>;
   searchFaces(search: FaceEmbeddingSearch): Promise<FaceSearchResult[]>;
-  getFaceDensities(search: FaceEmbeddingDensitySearch): Promise<FaceEmbeddingDensityResult[]>;
   upsert(smartInfo: Partial<SmartInfoEntity>, embedding?: Embedding): Promise<void>;
 }

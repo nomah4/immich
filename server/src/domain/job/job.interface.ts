@@ -36,6 +36,3 @@ export interface ISidecarWriteJob extends IEntityJob {
   longitude?: number;
 }
 
-export interface IFacialRecognitionJob extends IEntityJob {
-  maxDistance: number;
-}

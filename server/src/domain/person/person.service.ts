@@ -1,13 +1,13 @@
 import { PersonPathType } from '@app/infra/entities/move.entity';
 import { ImmichLogger } from '@app/infra/logger';
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { FindManyOptions, IsNull } from 'typeorm';
+import { IsNull } from 'typeorm';
 import { AccessCore, Permission } from '../access';
 import { AssetResponseDto, BulkIdErrorReason, BulkIdResponseDto, mapAsset } from '../asset';
 import { AuthDto } from '../auth';
 import { mimeTypes } from '../domain.constant';
 import { CacheControl, ImmichFileResponse, usePagination } from '../domain.util';
-import { IBaseJob, IEntityJob, IFacialRecognitionJob, JOBS_ASSET_PAGINATION_SIZE, JobName, QueueName } from '../job';
+import { IBaseJob, IEntityJob, JOBS_ASSET_PAGINATION_SIZE, JobName, QueueName } from '../job';
 import { FACE_THUMBNAIL_SIZE } from '../media';
 import {
   CropOptions,
@@ -361,7 +361,7 @@ export class PersonService {
       for (const { id } of page) {
         await this.jobRepository.queue({
           name: JobName.FACIAL_RECOGNITION,
-          data: { id, maxDistance: machineLearning.facialRecognition.maxDistance },
+          data: { id },
         });
       }
     }
