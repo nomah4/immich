@@ -243,25 +243,15 @@ export class PersonService {
     return results;
   }
 
-  private async delete(person: PersonEntity) {
-    await this.storageRepository.unlink(person.thumbnailPath);
-    await this.repository.delete(person);
-  }
-
-  private async deleteAll() {
-    const people = await this.repository.getAll();
+  private async delete(people: PersonEntity[]) {
     await Promise.all(people.map(person => this.storageRepository.unlink(person.thumbnailPath)));
-    await Promise.all(people.map(person => this.repository.delete(person)));
+    await this.repository.delete(people);
     this.logger.debug(`Deleted ${people.length} people`);
   }
 
   async handlePersonCleanup() {
     const people = await this.repository.getAllWithoutFaces();
-    for (const person of people) {
-      this.logger.debug(`Person ${person.name || person.id} no longer has any faces, deleting.`);
-      this.delete(person);
-    }
-
+    await this.delete(people);
     return true;
   }
 
@@ -272,7 +262,9 @@ export class PersonService {
     }
 
     if (force) {
-      await this.deleteAll();
+      const people = await this.repository.getAll();
+      await this.delete(people); // deletes thumbnails too
+      await this.repository.deleteAllFaces();
     }
 
     const assetPagination = usePagination(JOBS_ASSET_PAGINATION_SIZE, (pagination) => {
@@ -353,10 +345,12 @@ export class PersonService {
       return true;
     }
 
+    // TODO: handle paused jobs
     await this.jobRepository.waitForQueueCompletion(QueueName.FACE_DETECTION);
 
     if (force) {
-      await this.deleteAll();
+      const people = await this.repository.getAll();
+      await this.delete(people);
     }
 
     const facePagination = usePagination(JOBS_ASSET_PAGINATION_SIZE, (pagination) =>
@@ -396,15 +390,15 @@ export class PersonService {
       numResults: 100,
     });
 
-    this.logger.log(`Face ${id} has ${matches.length} matches`);
+    this.logger.debug(`Face ${id} has ${matches.length} matches`);
 
-    let personId = face.personId ? face.personId : matches.find((match) => match.face.personId)?.face.personId;
+    let personId = matches.find((match) => match.face.personId)?.face.personId; // `matches` also includes the face itself
     let faceIds = [id];
 
     const isCore = matches.length >= machineLearning.facialRecognition.minFaces + 1;
     if (isCore) {
       if (!personId) {
-        this.logger.log(`Generating new person for face ${id}`);
+        this.logger.log(`Creating new person for face ${id}`);
         const newPerson = await this.repository.create({ ownerId: face.asset.ownerId, faceAssetId: face.id });
         await this.jobRepository.queue({ name: JobName.GENERATE_PERSON_THUMBNAIL, data: { id: newPerson.id } });
         personId = newPerson.id;
@@ -415,7 +409,7 @@ export class PersonService {
     }
 
     if (personId) {
-      this.logger.log(`Assigning ${faceIds.length} faces to person ${personId}`);
+      this.logger.debug(`Assigning ${faceIds.length} faces to person ${personId}`);
       await this.repository.reassignFaces({ faceIds, newPersonId: personId });
     }
 
@@ -534,7 +528,7 @@ export class PersonService {
         this.logger.log(`Merging ${mergeName} into ${primaryName}`);
 
         await this.repository.reassignFaces(mergeData);
-        await this.delete(mergePerson);
+        await this.delete([mergePerson]);
 
         this.logger.log(`Merged ${mergeName} into ${primaryName}`);
         results.push({ id: mergeId, success: true });
