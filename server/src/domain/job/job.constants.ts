@@ -57,7 +57,6 @@ export enum JobName {
 
   // facial recognition
   PERSON_CLEANUP = 'person-cleanup',
-  PERSON_DELETE = 'person-delete',
   QUEUE_FACE_DETECTION = 'queue-face-detection',
   FACE_DETECTION = 'face-detection',
   QUEUE_FACIAL_RECOGNITION = 'queue-facial-recognition',
@@ -97,7 +96,6 @@ export const JOBS_TO_QUEUE: Record<JobName, QueueName> = {
   [JobName.DELETE_FILES]: QueueName.BACKGROUND_TASK,
   [JobName.CLEAN_OLD_AUDIT_LOGS]: QueueName.BACKGROUND_TASK,
   [JobName.PERSON_CLEANUP]: QueueName.BACKGROUND_TASK,
-  [JobName.PERSON_DELETE]: QueueName.BACKGROUND_TASK,
 
   // conversion
   [JobName.QUEUE_VIDEO_CONVERSION]: QueueName.VIDEO_CONVERSION,

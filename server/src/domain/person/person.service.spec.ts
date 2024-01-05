@@ -503,41 +503,14 @@ describe(PersonService.name, () => {
     });
   });
 
-  describe('handlePersonDelete', () => {
-    it('should stop if a person has not be found', async () => {
-      personMock.getById.mockResolvedValue(null);
-
-      await expect(sut.handlePersonDelete({ id: 'person-1' })).resolves.toBe(false);
-      expect(personMock.update).not.toHaveBeenCalled();
-      expect(storageMock.unlink).not.toHaveBeenCalled();
-    });
-    it('should delete a person', async () => {
-      personMock.getById.mockResolvedValue(personStub.primaryPerson);
-
-      await expect(sut.handlePersonDelete({ id: 'person-1' })).resolves.toBe(true);
-      expect(personMock.delete).toHaveBeenCalledWith(personStub.primaryPerson);
-      expect(storageMock.unlink).toHaveBeenCalledWith(personStub.primaryPerson.thumbnailPath);
-    });
-  });
-
-  describe('handlePersonDelete', () => {
-    it('should delete person', async () => {
-      personMock.getById.mockResolvedValue(personStub.withName);
-
-      await sut.handlePersonDelete({ id: personStub.withName.id });
-
-      expect(personMock.delete).toHaveBeenCalledWith(personStub.withName);
-      expect(storageMock.unlink).toHaveBeenCalledWith(personStub.withName.thumbnailPath);
-    });
-  });
-
   describe('handlePersonCleanup', () => {
     it('should delete people without faces', async () => {
       personMock.getAllWithoutFaces.mockResolvedValue([personStub.noName]);
 
       await sut.handlePersonCleanup();
 
-      expect(jobMock.queue).toHaveBeenCalledWith({ name: JobName.PERSON_DELETE, data: { id: personStub.noName.id } });
+      expect(personMock.delete).toHaveBeenCalledWith(personStub.noName);
+      expect(storageMock.unlink).toHaveBeenCalledWith(personStub.noName.thumbnailPath);
     });
   });
 
@@ -578,10 +551,6 @@ describe(PersonService.name, () => {
       expect(jobMock.queue).toHaveBeenCalledWith({
         name: JobName.FACIAL_RECOGNITION,
         data: { id: assetStub.image.id },
-      });
-      expect(jobMock.queue).toHaveBeenCalledWith({
-        name: JobName.PERSON_DELETE,
-        data: { id: personStub.withName.id },
       });
     });
   });
@@ -826,10 +795,6 @@ describe(PersonService.name, () => {
         oldPersonId: personStub.mergePerson.id,
       });
 
-      expect(jobMock.queue).toHaveBeenCalledWith({
-        name: JobName.PERSON_DELETE,
-        data: { id: personStub.mergePerson.id },
-      });
       expect(accessMock.person.checkOwnerAccess).toHaveBeenCalledWith(authStub.admin.user.id, new Set(['person-1']));
     });
 

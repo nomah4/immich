@@ -1,16 +1,18 @@
 import {
   AssetFaceId,
   IPersonRepository,
+  Paginated,
+  PaginationOptions,
   PersonNameSearchOptions,
   PersonSearchOptions,
   PersonStatistics,
   UpdateFacesData,
 } from '@app/domain';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, IsNull, Not, Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { AssetEntity, AssetFaceEntity, PersonEntity } from '../entities';
 import { DummyValue, GenerateSql } from '../infra.util';
-import { asVector } from '../infra.utils';
+import { asVector, paginate } from '../infra.utils';
 
 export class PersonRepository implements IPersonRepository {
   constructor(
@@ -62,9 +64,8 @@ export class PersonRepository implements IPersonRepository {
     return people.length;
   }
 
-  @GenerateSql()
-  getAllFaces(): Promise<AssetFaceEntity[]> {
-    return this.assetFaceRepository.find({ relations: { asset: true }, withDeleted: true });
+  getAllFaces(pagination: PaginationOptions, options?: FindManyOptions<AssetFaceEntity>): Paginated<AssetFaceEntity> {
+    return paginate(this.assetFaceRepository, pagination, options);
   }
 
   @GenerateSql()

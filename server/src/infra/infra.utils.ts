@@ -1,5 +1,5 @@
 import { Paginated, PaginationOptions } from '@app/domain';
-import { Between, FindOneOptions, LessThanOrEqual, MoreThanOrEqual, ObjectLiteral, Repository } from 'typeorm';
+import { Between, FindManyOptions, LessThanOrEqual, MoreThanOrEqual, ObjectLiteral, Repository } from 'typeorm';
 
 /**
  * Allows optional values unlike the regular Between and uses MoreThanOrEqual
@@ -18,7 +18,7 @@ export function OptionalBetween<T>(from?: T, to?: T) {
 export async function paginate<Entity extends ObjectLiteral>(
   repository: Repository<Entity>,
   paginationOptions: PaginationOptions,
-  searchOptions?: FindOneOptions<Entity>,
+  searchOptions?: FindManyOptions<Entity>,
 ): Paginated<Entity> {
   const items = await repository.find({
     ...searchOptions,
